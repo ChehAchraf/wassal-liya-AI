@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+
+    <!-- logger class -->
+    <bean id="loggingService"
+          class="com.multitrans.wasalliya.helper.LoggingService">
+    </bean>
+    <!-- end logger class -->
+    <!-- JPA repositories -->
+    <jpa:repositories base-package="com.multitrans.wasalliya.repository" />
+    <bean id="nearestNeighbor"
+          class="com.multitrans.wasalliya.optimizer.NearestNeighbor" />
+    <bean id="clarkeWright" class="com.multitrans.wasalliya.optimizer.ClarkeWright" />
+    <!-- tour configuration -->
+    <bean id="tourService" class="com.multitrans.wasalliya.service.TourService">
+        <constructor-arg ref="tourRepository" />
+        <constructor-arg ref="tourMapper" />
+        <constructor-arg ref="nearestNeighbor" />
+
+        <constructor-arg ref="deliveryRepository" />
+        <constructor-arg ref="vehicaleRepository" />
+        <constructor-arg ref="warehouseRepository" />
+        <constructor-arg ref="loggingService" />
+    </bean>
+
+    <bean id="tourController" class="com.multitrans.wasalliya.controller.TourController">
+        <constructor-arg ref="tourService" />
+        <constructor-arg ref="objectMapper" />
+        <constructor-arg ref="tourMapper" />
+
+        <constructor-arg ref="warehouseRepository" />
+    </bean>
+    <!-- end tour configuration  -->
+
+    <!-- Vehicale Configuration -->
+    <bean id="vehicalmapper" class="com.multitrans.wasalliya.model.mapper.VehicaleMapper">
+      <constructor-arg ref="tourRepository"/>
+    </bean>
+    <bean id="vehicaleService" class="com.multitrans.wasalliya.service.VehicaleService">
+        <constructor-arg ref="vehicaleRepository" />
+        <constructor-arg ref="vehicalmapper" />
+        <constructor-arg ref="loggingService" />
+    </bean>
+    <bean id="vehicaleController" class="com.multitrans.wasalliya.controller.VehicaleController">
+        <constructor-arg ref="vehicaleService" />
+        <constructor-arg ref="vehicalmapper" />
+    </bean>
+    <!--end  Vehicale Configuration -->
+
+    <!-- start Delivery Configuration -->
+    <bean id="deliveryController" class="com.multitrans.wasalliya.controller.DeliveryController">
+        <constructor-arg ref="deliveryService" />
+    </bean>
+    <bean id="deliveryService" class="com.multitrans.wasalliya.service.DeliveryService">
+        <constructor-arg ref="deliveryRepository" />
+        <constructor-arg ref="deliveryMapper" />
+        <constructor-arg ref="loggingService" />
+    </bean>
+    <!-- end Delivery Configuration -->
+
+    <!-- start warehouse config -->
+    <bean id="warehouseservice" class="com.multitrans.wasalliya.service.WarehouseService">
+        <constructor-arg ref="warehouseRepository" />
+        <constructor-arg ref="warehouseMapper" />
+        <constructor-arg ref="loggingService" />
+    </bean>
+
+    <bean id="warehouseController" class="com.multitrans.wasalliya.controller.WarehouseController">
+        <constructor-arg ref="warehouseservice" />
+        <constructor-arg ref="warehouseMapper" />
+    </bean>
+    <!-- end warehouse config -->
+
+    <!-- mapper config -->
+    <bean id="tourMapper" class="com.multitrans.wasalliya.model.mapper.TourMapper">
+        <constructor-arg ref="vehicaleRepository" />
+        <constructor-arg ref="deliveryRepository" />
+        <constructor-arg ref="warehouseRepository" />
+    </bean>
+    <bean id="deliveryMapper" class="com.multitrans.wasalliya.model.mapper.DeliveryMapper" />
+    <bean id="warehouseMapper" class="com.multitrans.wasalliya.model.mapper.WarehouseMapper">
+        <constructor-arg ref="tourRepository" />
+    </bean>
+
+    <bean id="javaTimeModule" class="com.fasterxml.jackson.datatype.jsr310.JavaTimeModule" />
+
+    <bean id="objectMapper"
+          class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
+
+        <property name="modules">
+            <list>
+                <ref bean="javaTimeModule" />
+            </list>
+        </property>
+
+        <property name="serializationInclusion" value="NON_NULL" />
+    </bean>
+
+
+
+</beans>
