@@ -10,6 +10,7 @@ import com.multitrans.wasalliya.model.mapper.TourMapper;
 import com.multitrans.wasalliya.model.Delivery;
 import com.multitrans.wasalliya.model.Warehouse;
 import com.multitrans.wasalliya.repository.WarehouseRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class TourController {
     private final TourMapper tourMapper;
     private final WarehouseRepository warehouseRepo;
 
-
+    @Autowired
     public TourController(TourService tourservice, ObjectMapper objectmapper, TourMapper tourMapper, WarehouseRepository warehouseRepo) {
         this.tourSer = tourservice;
         this.objectmap = objectmapper;

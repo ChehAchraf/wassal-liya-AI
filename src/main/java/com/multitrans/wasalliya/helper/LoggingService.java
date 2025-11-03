@@ -2,7 +2,9 @@ package com.multitrans.wasalliya.helper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class LoggingService {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggingService.class);

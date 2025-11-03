@@ -18,7 +18,7 @@ public class Warehouse {
     @Column(name="latitude" , nullable=false)
     private double latitude;
 
-    @Column(name="logitude" , nullable=false)
+    @Column(name="longitude" , nullable=false)
     private double longitude;
 
     @Column(name="opening_hours" , nullable=false)

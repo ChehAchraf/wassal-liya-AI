@@ -4,10 +4,12 @@ import com.multitrans.wasalliya.model.dto.VehicalDTO;
 import com.multitrans.wasalliya.model.Tour;
 import com.multitrans.wasalliya.model.Vehicale;
 import com.multitrans.wasalliya.repository.TourRepository;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class VehicaleMapper {
 
     private final TourRepository tourrepo;

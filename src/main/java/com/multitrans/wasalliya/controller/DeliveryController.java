@@ -4,6 +4,7 @@ import com.multitrans.wasalliya.enums.DeliveryStatus;
 import com.multitrans.wasalliya.model.dto.DeliveryDTO;
 import com.multitrans.wasalliya.service.DeliveryService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,8 +13,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/deliveries")
 public class DeliveryController {
-    private final DeliveryService deliverySer;
 
+
+    private final DeliveryService deliverySer;
+    @Autowired
     public DeliveryController(DeliveryService deliveryService ){
         this.deliverySer = deliveryService;
     }

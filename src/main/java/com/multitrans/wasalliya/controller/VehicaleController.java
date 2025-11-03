@@ -2,6 +2,7 @@ package com.multitrans.wasalliya.controller;
 
 import com.multitrans.wasalliya.model.dto.VehicalDTO;
 import com.multitrans.wasalliya.model.mapper.VehicaleMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +15,10 @@ import jakarta.validation.Valid;
 @RequestMapping("/vehicales")
 public class VehicaleController {
 
+
     private final VehicaleService vehicaleSer;
     private final VehicaleMapper vmapper;
-
+    @Autowired
     public VehicaleController(VehicaleService vehicaleService, VehicaleMapper vehicaleMapper) {
         this.vehicaleSer = vehicaleService;
         this.vmapper = vehicaleMapper;

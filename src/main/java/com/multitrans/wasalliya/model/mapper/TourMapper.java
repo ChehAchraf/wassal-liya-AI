@@ -9,12 +9,14 @@ import com.multitrans.wasalliya.repository.DeliveryRepository;
 import com.multitrans.wasalliya.repository.VehicaleRepository;
 import com.multitrans.wasalliya.repository.WarehouseRepository;
 import lombok.Data;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
+@Component
 public class TourMapper {
 
     private final VehicaleRepository vehicaleRepo;

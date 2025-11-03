@@ -7,6 +7,8 @@ import com.multitrans.wasalliya.model.mapper.DeliveryMapper;
 import com.multitrans.wasalliya.model.Delivery;
 import com.multitrans.wasalliya.repository.DeliveryRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -14,12 +16,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Service
 public class DeliveryService {
 
     private final DeliveryRepository deliveryRepo;
     private final DeliveryMapper dMapper;
     private final LoggingService logger;
 
+    @Autowired
     public DeliveryService(DeliveryRepository deliveryRepo, DeliveryMapper deliveryMapper, LoggingService logger) {
         this.deliveryRepo = deliveryRepo;
         this.dMapper = deliveryMapper;
@@ -80,7 +84,6 @@ public class DeliveryService {
         List<Delivery> allDeliveries = deliveryRepo.findByStatsuAndWeight(status,weight);
         return allDeliveries.stream().map(d -> dMapper.toDTO(d)).collect(Collectors.toList());
     }
-
 
 
 }

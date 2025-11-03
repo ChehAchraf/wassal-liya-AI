@@ -3,16 +3,20 @@ package com.multitrans.wasalliya.optimizer;
 import com.multitrans.wasalliya.model.Delivery;
 import com.multitrans.wasalliya.model.Vehicale;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 
 @Getter
+
 public class CWRoute {
 
     private LinkedList<Delivery> deliveries;
 
     private double currentWeight;
     private double currentVolume;
+
 
     public CWRoute(Delivery initialDelivery) {
         this.deliveries = new LinkedList<>();

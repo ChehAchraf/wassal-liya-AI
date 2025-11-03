@@ -4,15 +4,18 @@ import com.multitrans.wasalliya.model.dto.WarehouseDTO;
 import com.multitrans.wasalliya.model.mapper.WarehouseMapper;
 import com.multitrans.wasalliya.service.WarehouseService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/warehouses")
 public class WarehouseController {
+
     private final WarehouseService warehouseSer;
     private  final WarehouseMapper wMapper;
 
+    @Autowired
     public WarehouseController(WarehouseService warehouseService,WarehouseMapper warehouseMapper){
         this.warehouseSer= warehouseService;
         this.wMapper = warehouseMapper;

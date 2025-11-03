@@ -22,10 +22,13 @@ import com.multitrans.wasalliya.repository.VehicaleRepository;
 import com.multitrans.wasalliya.repository.WarehouseRepository;
 import com.multitrans.wasalliya.util.DistanceCalculator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
+@Service
 public class TourService {
 
     private final TourRepository tourRepo;
@@ -36,6 +39,7 @@ public class TourService {
     private final WarehouseRepository warehouseRepo;
     private final LoggingService logger;
 
+    @Autowired
     public TourService(TourRepository tourRepository, TourMapper topurmapper, TourOptimizer tourOptimizer, DeliveryRepository deliveryRepo, VehicaleRepository vehicaleRepo, WarehouseRepository warehouseRepo, LoggingService logger) {
         this.tourRepo = tourRepository;
         this.tourmapper = topurmapper;

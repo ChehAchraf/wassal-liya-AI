@@ -4,9 +4,11 @@ import com.multitrans.wasalliya.model.dto.DeliveryDTO;
 import com.multitrans.wasalliya.model.Delivery;
 import com.multitrans.wasalliya.model.Tour;
 import com.multitrans.wasalliya.repository.TourRepository;
+import org.springframework.stereotype.Component;
 
 import java.util.NoSuchElementException;
 
+@Component
 public class DeliveryMapper {
     private final TourRepository tourRepo;
 

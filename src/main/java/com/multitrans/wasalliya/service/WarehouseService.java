@@ -8,15 +8,19 @@ import com.multitrans.wasalliya.model.Warehouse;
 import com.multitrans.wasalliya.repository.WarehouseRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
 
 @Slf4j
+@Service
 public class WarehouseService {
     private final WarehouseRepository warehouseRepo;
     private final WarehouseMapper wMapper;
     private final LoggingService logger;
 
+    @Autowired
     public WarehouseService(WarehouseRepository warehouserepository, WarehouseMapper warehousemapper, LoggingService logger) {
         this.warehouseRepo = warehouserepository;
         this.wMapper = warehousemapper;

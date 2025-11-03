@@ -4,10 +4,13 @@ import com.multitrans.wasalliya.model.Delivery;
 import com.multitrans.wasalliya.model.Vehicale;
 import com.multitrans.wasalliya.model.Warehouse;
 import com.multitrans.wasalliya.util.DistanceCalculator;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Component
+@ConditionalOnProperty(name = "app.optimizer.strategy", havingValue = "nearestNeighbor")
 public class NearestNeighbor implements TourOptimizer{
 
     @Override

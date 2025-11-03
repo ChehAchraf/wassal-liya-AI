@@ -4,11 +4,13 @@ import com.multitrans.wasalliya.model.dto.WarehouseDTO;
 import com.multitrans.wasalliya.model.Tour;
 import com.multitrans.wasalliya.model.Warehouse;
 import com.multitrans.wasalliya.repository.TourRepository;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+@Component
 public class WarehouseMapper {
     private final TourRepository tourRepo;
 

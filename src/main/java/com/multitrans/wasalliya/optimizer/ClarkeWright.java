@@ -4,9 +4,12 @@ import com.multitrans.wasalliya.model.Delivery;
 import com.multitrans.wasalliya.model.Vehicale;
 import com.multitrans.wasalliya.model.Warehouse;
 import com.multitrans.wasalliya.util.DistanceCalculator;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
-
+@Component
+@ConditionalOnProperty(name = "app.optimizer.strategy", havingValue = "clarkeWright")
 public class ClarkeWright implements TourOptimizer{
     @Override
     public List<Delivery> calculateOptimalTour(Warehouse warehouse, List<Delivery> pendingDeliveries, Vehicale vehicle) {
@@ -27,7 +30,7 @@ public class ClarkeWright implements TourOptimizer{
 
                 double savingAmount = (dist_WA + dist_WB) - dist_AB;
 
-                if (savingAmount > 0) { // (منطقي أننا نخدمو غير بالوفورات الموجبة)
+                if (savingAmount > 0) {
                     savingsList.add(new Saving(deliveryA, deliveryB, savingAmount));
                 }
             }

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="v1.0-create-tables" author="your_name_here">
+
+        <createTable tableName="warehouses">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="latitude" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="longitude" type="DOUBLE"> <constraints nullable="false"/>
+            </column>
+            <column name="opening_hours" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="vehicales">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="vehical_type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="max_weight" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="max_volume" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="max_deliveries" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="tours">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="date" type="DATE"/>
+            <column name="total_distance" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="vehicale_id" type="BIGINT"/> <column name="warehouse_id" type="BIGINT"> <constraints nullable="false"/>
+        </column>
+        </createTable>
+
+        <createTable tableName="deliveries">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="address" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="latitude" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="longitude" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="weight" type="DOUBLE"/>
+            <column name="volume" type="DOUBLE"/>
+            <column name="start_time_window" type="VARCHAR(255)"/>
+            <column name="delivery_status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tour_id" type="BIGINT"/> </createTable>
+    </changeSet>
+
+    <changeSet id="v1.0-create-foreign-keys" author="your_name_here">
+
+        <addForeignKeyConstraint baseTableName="tours"
+                                 baseColumnNames="vehicale_id"
+                                 constraintName="fk_tour_vehicale"
+                                 referencedTableName="vehicales"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="tours"
+                                 baseColumnNames="warehouse_id"
+                                 constraintName="fk_tour_warehouse"
+                                 referencedTableName="warehouses"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="deliveries"
+                                 baseColumnNames="tour_id"
+                                 constraintName="fk_delivery_tour"
+                                 referencedTableName="tours"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

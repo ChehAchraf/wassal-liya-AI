@@ -8,19 +8,24 @@ import com.multitrans.wasalliya.model.Vehicale;
 import com.multitrans.wasalliya.repository.VehicaleRepository;
 
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+@Service
 public class VehicaleService {
-    
+
     private final VehicaleRepository vehicaleRepo;
     private final VehicaleMapper vmapper;
     private final LoggingService logger;
 
-    public VehicaleService(VehicaleRepository vehicaleRepository, VehicaleMapper vehicaleMapper, LoggingService logger){
+    @Autowired
+    public VehicaleService(VehicaleRepository vehicaleRepository, @Qualifier("vehicaleMapper") VehicaleMapper vmapper, LoggingService logger){
         this.vehicaleRepo = vehicaleRepository;
-        this.vmapper = vehicaleMapper;
+        this.vmapper = vmapper;
         this.logger = logger;
     }
 
