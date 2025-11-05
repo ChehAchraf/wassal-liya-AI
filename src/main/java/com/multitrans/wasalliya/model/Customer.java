@@ -16,6 +16,6 @@ public class Customer {
     private double latitude;
     private double longitude;
     private String preferredTimeSlot;
-    @OneToMany
+    @OneToMany(mappedBy = "customer")
     private List<Delivery> delivery;
 }

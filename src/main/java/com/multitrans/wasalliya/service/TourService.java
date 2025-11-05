@@ -167,8 +167,9 @@ public class TourService {
 
             history.setPlannedTime(planned);
             history.setActualTime(actual);
-            if (planned != null) {
-                history.setDelay(Duration.between(planned, actual));
+            if (planned != null && actual != null) {
+                Duration delayDuration = Duration.between(planned, actual);
+                history.setDelayInMinutes(delayDuration.toMinutes());
             }
             historyRepo.save(history);
         });

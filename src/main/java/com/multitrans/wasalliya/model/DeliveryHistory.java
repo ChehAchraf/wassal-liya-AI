@@ -39,7 +39,7 @@ public class DeliveryHistory {
     @Column(name = "actual_time")
     private LocalTime actualTime;
 
-    @Column(name = "delay")
-    private Duration delay;
+    @Column(name = "delay_in_minutes")
+    private Long delayInMinutes;
 
 }
