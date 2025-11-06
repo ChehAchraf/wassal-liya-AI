@@ -19,7 +19,7 @@ public interface DeliveryRepository extends JpaRepository<Delivery,Long> {
 
     public List<Delivery> findAllByDeliveryStatusAndWeightIsGreaterThanEqual( DeliveryStatus status, Double weight);
 
-    @Query("SELECT d FROM Delivery d WHERE d.deliveryStatus = : status AND d.weight > :weight")
+    @Query("SELECT d FROM Delivery d WHERE d.deliveryStatus = :status AND d.weight > :weight")
     public List<Delivery> findByStatsuAndWeight(@Param("status") DeliveryStatus status, @Param("weight") Double weight);
 
 }

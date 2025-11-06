@@ -28,6 +28,12 @@
                                  constraintName="fk_delivery_customer"
                                  referencedTableName="customers"
                                  referencedColumnNames="id"/>
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="deliveries"
+                                      constraintName="fk_delivery_customer"/>
+            <dropColumn tableName="deliveries"
+                        columnName="customer_id"/>
+        </rollback>
     </changeSet>
 
     <changeSet id="v2.0-create-delivery-history" author="ashrafChehboun">
