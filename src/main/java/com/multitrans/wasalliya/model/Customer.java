@@ -1,12 +1,15 @@
 package com.multitrans.wasalliya.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Table(name = "customers")
+@Getter
+@Setter
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,5 +20,5 @@ public class Customer {
     private double longitude;
     private String preferredTimeSlot;
     @OneToMany(mappedBy = "customer")
-    private List<Delivery> delivery;
+    private List<Delivery> deliveries;
 }
