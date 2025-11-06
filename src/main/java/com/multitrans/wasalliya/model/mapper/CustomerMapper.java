@@ -54,4 +54,18 @@ public class CustomerMapper {
         return customer;
     }
 
+    // updtae entity from dto
+    public void updateEntityFromDTO(CustomerDTO dto, Customer entity) {
+        if (dto == null || entity == null) {
+            return;
+        }
+
+        entity.setName(dto.name());
+        entity.setAddress(dto.address());
+        entity.setLatitude(dto.latitude());
+        entity.setLongitude(dto.longitude());
+        entity.setPreferredTimeSlot(dto.preferredTimeSlot());
+
+    }
+
 }
