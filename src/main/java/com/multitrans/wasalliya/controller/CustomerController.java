@@ -30,7 +30,15 @@ public class CustomerController {
         return ResponseEntity.ok(customerSer.getAllCustomers());
     }
 
+    @DeleteMapping
+    public ResponseEntity<String> delete(@PathVariable Long id){
+        return ResponseEntity.ok(customerSer.deleteCustomer(id));
+    }
 
+    @PutMapping
+    public ResponseEntity<CustomerDTO> update(@PathVariable Long id, @RequestBody CustomerDTO dto){
+        return ResponseEntity.ok(customerSer.updateCustomerByID(id,dto));
+    }
 
 
 

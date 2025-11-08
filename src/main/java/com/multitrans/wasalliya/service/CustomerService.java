@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,4 +32,18 @@ public class CustomerService {
         List<Customer> allCustomers = customerRepo.findAll();
         return allCustomers.stream().map(cMapper::toDTO).collect(Collectors.toList());
     }
+
+    public String deleteCustomer(Long id){
+        Customer customerToDelete = customerRepo.findById(id).orElseThrow(NoSuchElementException::new);
+        customerRepo.deleteById(id);
+        return "The customer with id"+ id+" has been deleted";
+    }
+
+    public CustomerDTO updateCustomerByID(Long id, CustomerDTO dto){
+        Customer customerToEdit = customerRepo.findById(id).orElseThrow(NoSuchElementException::new);
+        cMapper.updateEntityFromDTO(dto,customerToEdit);
+        Customer savedCustomer = customerRepo.save(customerToEdit);
+        return cMapper.toDTO(savedCustomer);
+    }
+
 }
