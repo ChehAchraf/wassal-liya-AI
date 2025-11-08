@@ -1,9 +1,12 @@
 package com.multitrans.wasalliya.model.mapper;
 
+import com.multitrans.wasalliya.model.Customer;
 import com.multitrans.wasalliya.model.dto.DeliveryDTO;
 import com.multitrans.wasalliya.model.Delivery;
 import com.multitrans.wasalliya.model.Tour;
+import com.multitrans.wasalliya.repository.CustomerRepository;
 import com.multitrans.wasalliya.repository.TourRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.NoSuchElementException;
@@ -11,15 +14,18 @@ import java.util.NoSuchElementException;
 @Component
 public class DeliveryMapper {
     private final TourRepository tourRepo;
+    private final CustomerRepository customerRepo;
 
-    public DeliveryMapper(TourRepository tourRepository){
+    @Autowired
+    public DeliveryMapper(TourRepository tourRepository, CustomerRepository customerRepo){
         this.tourRepo = tourRepository;
+        this.customerRepo = customerRepo;
     }
 
     public Delivery toEntity (DeliveryDTO dto){
         Delivery delivery = new Delivery();
 
-        // start the procces
+        // start the process
         delivery.setId(dto.id());
         delivery.setAddress(dto.address());
         delivery.setLatitude(dto.latitude());
@@ -31,6 +37,8 @@ public class DeliveryMapper {
         Tour tour = tourRepo.findById(dto.tourId())
                 .orElseThrow(()-> new RuntimeException("Tour with id " + dto.tourId()+ " was not found"));
         delivery.setTour(tour);
+        Customer customer = customerRepo.findById(dto.customerId()).orElseThrow(NoSuchElementException::new);
+        delivery.setCustomer(customer);
         return delivery;
     }
 
@@ -45,7 +53,8 @@ public class DeliveryMapper {
                 delivery.getVolume(),
                 delivery.getTimeWindow(),
                 delivery.getDeliveryStatus(),
-                delivery.getTour() != null ? delivery.getTour().getId() : null
+                delivery.getTour() != null ? delivery.getTour().getId() : null,
+                delivery.getCustomer() != null ? delivery.getCustomer().getId() : null
         );
     }
 
@@ -56,7 +65,8 @@ public class DeliveryMapper {
         entityToUpdate.setVolume(dto.volume() != null ? dto.volume() : entityToUpdate.getVolume());
         entityToUpdate.setTimeWindow(dto.timeWindow() != null ? dto.timeWindow() : entityToUpdate.getTimeWindow());
         entityToUpdate.setDeliveryStatus(dto.deliveryStatus() != null ? dto.deliveryStatus() : entityToUpdate.getDeliveryStatus());
-        entityToUpdate.setTour(dto.tourId() != null ? tourRepo.findById(dto.tourId()).orElseThrow(()-> new NoSuchElementException()) : entityToUpdate.getTour());
+        entityToUpdate.setTour(dto.tourId() != null ? tourRepo.findById(dto.tourId()).orElseThrow(NoSuchElementException::new) : entityToUpdate.getTour());
+        entityToUpdate.setCustomer(dto.customerId() != null ? customerRepo.findById(dto.customerId()).orElseThrow(NoSuchElementException::new): entityToUpdate.getCustomer()) ;
     }
 
 }

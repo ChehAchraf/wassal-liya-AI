@@ -40,6 +40,4 @@ public class CustomerController {
         return ResponseEntity.ok(customerSer.updateCustomerByID(id,dto));
     }
 
-
-
 }

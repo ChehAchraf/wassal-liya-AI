@@ -14,6 +14,7 @@ public record DeliveryDTO(
         Double volume,
         String timeWindow,
         DeliveryStatus deliveryStatus,
-        Long tourId
+        Long tourId,
+        Long customerId
 ) {
 }
