@@ -66,6 +66,7 @@ public class Delivery {
 
     @ManyToOne
     @JoinColumn(name="customer_id")
+    @JsonBackReference("delivery-customer")
     private Customer customer;
 
 }

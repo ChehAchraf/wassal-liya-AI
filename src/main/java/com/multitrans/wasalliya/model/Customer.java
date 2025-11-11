@@ -1,5 +1,6 @@
 package com.multitrans.wasalliya.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,5 +21,6 @@ public class Customer {
     private double longitude;
     private String preferredTimeSlot;
     @OneToMany(mappedBy = "customer")
+    @JsonManagedReference("delivery-customer")
     private List<Delivery> deliveries;
 }
