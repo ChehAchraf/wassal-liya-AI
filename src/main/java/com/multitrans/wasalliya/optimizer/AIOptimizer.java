@@ -39,7 +39,6 @@ public class AIOptimizer implements TourOptimizer {
 
             List<Map<String, Object>> deliveriesSimple = pendingDeliveries.stream()
                     .map(d ->{
-                        // كنصاوبو Map ونفرضو النوع ديالها
                         Map<String, Object> map = new HashMap<>();
                         map.put("id", d.getId());
                         map.put("lat", d.getLatitude());
@@ -74,10 +73,10 @@ public class AIOptimizer implements TourOptimizer {
                     }
                     """.formatted(warehouseJson, deliveriesJson, vehicle.getMaxWeight());
 
-            System.out.println("🤖 Asking Tinyllama to optimize...");
+            System.out.println(" Asking Tinyllama to optimize...");
             ChatResponse response = chatModel.call(new Prompt(promptText));
             String aiResponseRaw = response.getResult().getOutput().getContent();
-            System.out.println("🤖 tinyllama Answer: " + aiResponseRaw);
+            System.out.println(" tinyllama Answer: " + aiResponseRaw);
             String cleanJson = aiResponseRaw;
             int firstBracket = aiResponseRaw.indexOf("{");
             int lastBracket = aiResponseRaw.lastIndexOf("}");
@@ -85,7 +84,7 @@ public class AIOptimizer implements TourOptimizer {
             if (firstBracket != -1 && lastBracket != -1 && firstBracket < lastBracket) {
                 cleanJson = aiResponseRaw.substring(firstBracket, lastBracket + 1);
             } else {
-                System.err.println("🚨 Could not find JSON in AI response!");
+                System.err.println(" Could not find JSON in AI response!");
             }            JsonNode rootNode = objectMapper.readTree(cleanJson);
 
             JsonNode idsNode = rootNode.get("ordered_ids");
@@ -115,7 +114,7 @@ public class AIOptimizer implements TourOptimizer {
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Error parsing AI response or inputs", e);
         } catch (Exception e) {
-            System.err.println("🚨 AI Optimization failed, falling back to original order: " + e.getMessage());
+            System.err.println(" AI Optimization failed, falling back to original order: " + e.getMessage());
             return pendingDeliveries;
         }
     }

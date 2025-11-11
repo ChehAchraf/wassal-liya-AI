@@ -17,18 +17,27 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleBodyError(HttpMessageNotReadableException ex){
-        return ResponseEntity.badRequest().body("Please make sure you're json file are set as well");
+    public ResponseEntity<Map<String, String>> handleBodyError(HttpMessageNotReadableException ex){
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error", "Please make sure your JSON file is structured correctly.");
+        errors.put("details", ex.getMessage());
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<String> handleNotFount(NoSuchElementException ex){
-        return ResponseEntity.badRequest().body("The record you are trying to reach is not found");
+    public ResponseEntity<Map<String, String>> handleNotFount(NoSuchElementException ex){
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error", "The record you are trying to reach is not found");
+        errors.put("details", ex.getMessage());
+        return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<String> handleDataIntegrity(DataIntegrityViolationException ex){
-        return ResponseEntity.badRequest().body("All the fields are required brother.");
+    public ResponseEntity<Map<String, String>> handleDataIntegrity(DataIntegrityViolationException ex){
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error", "All the fields are required brother.");
+        errors.put("details", ex.getMessage());
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -40,6 +49,8 @@ public class GlobalExceptionHandler {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
+        errors.put("error", "Validation failed");
+        errors.put("details", ex.getMessage());
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 }

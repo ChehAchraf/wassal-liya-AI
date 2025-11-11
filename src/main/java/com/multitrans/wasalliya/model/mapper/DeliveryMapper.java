@@ -1,72 +1,47 @@
 package com.multitrans.wasalliya.model.mapper;
 
-import com.multitrans.wasalliya.model.Customer;
-import com.multitrans.wasalliya.model.dto.DeliveryDTO;
 import com.multitrans.wasalliya.model.Delivery;
-import com.multitrans.wasalliya.model.Tour;
-import com.multitrans.wasalliya.repository.CustomerRepository;
-import com.multitrans.wasalliya.repository.TourRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import com.multitrans.wasalliya.model.dto.DeliveryDTO;
+import com.multitrans.wasalliya.model.dto.DeliveryResponseDTO;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
+import com.multitrans.wasalliya.enums.DeliveryStatus;
 
-import java.util.NoSuchElementException;
+import java.util.List;
 
-@Component
-public class DeliveryMapper {
-    private final TourRepository tourRepo;
-    private final CustomerRepository customerRepo;
+@Mapper(componentModel = "spring", uses = {CustomerMapper.class})
+public interface DeliveryMapper {
 
-    @Autowired
-    public DeliveryMapper(TourRepository tourRepository, CustomerRepository customerRepo){
-        this.tourRepo = tourRepository;
-        this.customerRepo = customerRepo;
+
+    @Mapping(source = "tour.id", target = "tourId")
+    @Mapping(source = "customer.id", target = "customerId")
+    DeliveryDTO toDTO(Delivery delivery);
+
+    List<DeliveryDTO> toDTOList(List<Delivery> deliveries);
+
+
+    @Mapping(source = "deliveryStatus", target = "deliveryStatus", qualifiedByName = "deliveryStatusToString")
+    DeliveryResponseDTO toResponseDTO(Delivery delivery);
+    
+
+    @Named("deliveryStatusToString")
+    default String deliveryStatusToString(DeliveryStatus status) {
+        return status != null ? status.name() : null;
     }
 
-    public Delivery toEntity (DeliveryDTO dto){
-        Delivery delivery = new Delivery();
+    List<DeliveryResponseDTO> toResponseDTOList(List<Delivery> deliveries);
 
-        // start the process
-        delivery.setId(dto.id());
-        delivery.setAddress(dto.address());
-        delivery.setLatitude(dto.latitude());
-        delivery.setLongitude(dto.longitude());
-        delivery.setWeight(dto.weight());
-        delivery.setVolume(dto.volume());
-        delivery.setTimeWindow(dto.timeWindow());
-        delivery.setDeliveryStatus(dto.deliveryStatus());
-        Tour tour = tourRepo.findById(dto.tourId())
-                .orElseThrow(()-> new RuntimeException("Tour with id " + dto.tourId()+ " was not found"));
-        delivery.setTour(tour);
-        Customer customer = customerRepo.findById(dto.customerId()).orElseThrow(NoSuchElementException::new);
-        delivery.setCustomer(customer);
-        return delivery;
-    }
 
-    public DeliveryDTO toDTO(Delivery delivery){
-        if (delivery == null) return null;
-        return new DeliveryDTO(
-                delivery.getId(),
-                delivery.getAddress(),
-                delivery.getLatitude(),
-                delivery.getLongitude(),
-                delivery.getWeight(),
-                delivery.getVolume(),
-                delivery.getTimeWindow(),
-                delivery.getDeliveryStatus(),
-                delivery.getTour() != null ? delivery.getTour().getId() : null,
-                delivery.getCustomer() != null ? delivery.getCustomer().getId() : null
-        );
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "tour", ignore = true)
+    @Mapping(target = "customer", ignore = true)
+    Delivery toEntity(DeliveryDTO dto);
 
-    public void updateFromDTO(DeliveryDTO dto , Delivery entityToUpdate){
-        entityToUpdate.setAddress(dto.address() != null ? dto.address() : entityToUpdate.getAddress());
-        entityToUpdate.setLatitude(dto.latitude() != null ? dto.latitude() : entityToUpdate.getLatitude());
-        entityToUpdate.setLongitude(dto.longitude() != null ? dto.longitude() : entityToUpdate.getLongitude());
-        entityToUpdate.setVolume(dto.volume() != null ? dto.volume() : entityToUpdate.getVolume());
-        entityToUpdate.setTimeWindow(dto.timeWindow() != null ? dto.timeWindow() : entityToUpdate.getTimeWindow());
-        entityToUpdate.setDeliveryStatus(dto.deliveryStatus() != null ? dto.deliveryStatus() : entityToUpdate.getDeliveryStatus());
-        entityToUpdate.setTour(dto.tourId() != null ? tourRepo.findById(dto.tourId()).orElseThrow(NoSuchElementException::new) : entityToUpdate.getTour());
-        entityToUpdate.setCustomer(dto.customerId() != null ? customerRepo.findById(dto.customerId()).orElseThrow(NoSuchElementException::new): entityToUpdate.getCustomer()) ;
-    }
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "tour", ignore = true)
+    @Mapping(target = "customer", ignore = true)
+    void updateFromDTO(DeliveryDTO dto, @MappingTarget Delivery entity);
 }

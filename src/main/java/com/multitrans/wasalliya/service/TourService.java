@@ -72,6 +72,22 @@ public class TourService {
     public TourDTO saveTour(TourDTO dto) {
         logger.logInfo("attempt to save tour");
         Tour tourToSave = tourmapper.toEntity(dto);
+        
+        if (dto.vehicaleId() != null) {
+            Vehicale vehicale = vehicaleRepo.findById(dto.vehicaleId())
+                    .orElseThrow(() -> new RuntimeException("Vehicale not found with id: " + dto.vehicaleId()));
+            tourToSave.setVehicale(vehicale);
+        }
+        if (dto.warehouseId() != null) {
+            Warehouse warehouse = warehouseRepo.findById(dto.warehouseId())
+                    .orElseThrow(() -> new RuntimeException("Warehouse not found with id: " + dto.warehouseId()));
+            tourToSave.setWarehouse(warehouse);
+        }
+        if (dto.deliveryIds() != null && !dto.deliveryIds().isEmpty()) {
+            List<Delivery> deliveries = deliveryRepo.findAllById(dto.deliveryIds());
+            tourToSave.setDeliveries(deliveries);
+        }
+        
         Tour savedTour = tourRepo.save(tourToSave);
         logger.logInfo("Tour with id :" + savedTour.getId()+" has been saved" );
         return tourmapper.toDTO(savedTour);
