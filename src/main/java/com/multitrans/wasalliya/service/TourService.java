@@ -207,6 +207,33 @@ public class TourService {
         }
     }
 
+    @Transactional
+    public void completeTour(Long tourId){
 
+        Tour tour = tourRepo.findById(tourId).orElseThrow(NoSuchElementException::new);
+
+        tour.getDeliveries().forEach(delivery -> {
+            delivery.setDeliveryStatus(DeliveryStatus.DELIVRED);
+            DeliveryHistory history = new DeliveryHistory();
+            history.setCustomer(delivery.getCustomer());
+            history.setTour(tour);
+            history.setDateDeLivraison(tour.getDate());
+            history.setDayOfWeek(tour.getDate().getDayOfWeek());
+
+            LocalTime planned = parsePlannedTime(delivery.getTimeWindow());
+            LocalTime actual = LocalTime.now();
+
+            history.setPlannedTime(planned);
+            history.setActualTime(actual);
+
+            if (planned != null){
+                Duration delayDuration = Duration.between(planned,actual);
+                history.setDelayInMinutes(delayDuration.toMinutes());
+            }
+
+            historyRepo.save(history);
+
+        });
+    }
 
 }
