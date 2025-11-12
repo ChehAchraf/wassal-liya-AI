@@ -1,12 +1,11 @@
 package com.multitrans.wasalliya.service;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.multitrans.wasalliya.enums.VehicalType;
 import com.multitrans.wasalliya.helper.LoggingService;
@@ -235,5 +234,12 @@ public class TourService {
 
         });
     }
+
+        public Map<DayOfWeek,Long> getHistoryCountByDay(){
+            var allHistories = historyRepo.findAll();
+
+            return allHistories.stream().collect(Collectors.groupingBy(DeliveryHistory::getDayOfWeek,Collectors.counting()
+            ));
+        }
 
 }
