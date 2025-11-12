@@ -96,5 +96,11 @@ public class TourController {
         return ResponseEntity.ok(updatedTour.get());
     }
 
+    @PostMapping("{id}/completed")
+    public ResponseEntity<Void> completeTourStatus(@PathVariable Long id){
+        tourSer.completeTour(id);
+        return ResponseEntity.ok().build();
+    }
+
 
 }
