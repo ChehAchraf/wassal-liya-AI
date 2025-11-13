@@ -2,9 +2,11 @@ package com.multitrans.wasalliya.service;
 
 
 import com.multitrans.wasalliya.helper.LoggingService;
+import com.multitrans.wasalliya.model.Tour;
 import com.multitrans.wasalliya.model.dto.WarehouseDTO;
 import com.multitrans.wasalliya.model.mapper.WarehouseMapper;
 import com.multitrans.wasalliya.model.Warehouse;
+import com.multitrans.wasalliya.repository.TourRepository;
 import com.multitrans.wasalliya.repository.WarehouseRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -19,18 +21,30 @@ public class WarehouseService {
     private final WarehouseRepository warehouseRepo;
     private final WarehouseMapper wMapper;
     private final LoggingService logger;
+    private final TourRepository tourRepo;
 
     @Autowired
-    public WarehouseService(WarehouseRepository warehouserepository, WarehouseMapper warehousemapper, LoggingService logger) {
+    public WarehouseService(WarehouseRepository warehouserepository, WarehouseMapper warehousemapper, LoggingService logger,
+                          TourRepository tourRepo) {
         this.warehouseRepo = warehouserepository;
         this.wMapper = warehousemapper;
         this.logger = logger;
+        this.tourRepo = tourRepo;
     }
 
     @Transactional
     public WarehouseDTO createWarehouse(WarehouseDTO dto) {
         logger.logInfo("Attempting to create a new warehouse...");
         Warehouse warehouseToSave = wMapper.toEntity(dto);
+        
+        if (dto.tourIds() != null && !dto.tourIds().isEmpty()) {
+            java.util.List<Tour> tours = dto.tourIds().stream()
+                    .map(id -> tourRepo.findById(id)
+                            .orElseThrow(NoSuchElementException::new))
+                    .toList();
+            warehouseToSave.setTours(tours);
+        }
+        
         Warehouse savedWarehouse = warehouseRepo.save(warehouseToSave);
         logger.logInfo("Warehouse created successfully with ID: " + savedWarehouse.getId());
         return wMapper.toDTO(savedWarehouse);
@@ -58,6 +72,13 @@ public class WarehouseService {
         logger.logInfo("Attempt to update warehouse");
         Warehouse warehouseToEdit = warehouseRepo.findById(id).orElseThrow(NoSuchElementException::new);
         wMapper.updateFromDTO(dto, warehouseToEdit);
+        
+        // Update relationships from IDs
+        if (dto.tourIds() != null) {
+            java.util.List<Tour> newTours = tourRepo.findAllById(dto.tourIds());
+            warehouseToEdit.setTours(newTours);
+        }
+        
         logger.logInfo("Warehouse has been updated , id : " + warehouseToEdit.getId());
         return wMapper.toDTO(warehouseRepo.save(warehouseToEdit));
     }

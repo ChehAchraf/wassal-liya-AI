@@ -1,25 +1,20 @@
 package com.multitrans.wasalliya.service;
 
+import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.multitrans.wasalliya.enums.VehicalType;
 import com.multitrans.wasalliya.helper.LoggingService;
+import com.multitrans.wasalliya.model.*;
 import com.multitrans.wasalliya.model.dto.TourDTO;
 import com.multitrans.wasalliya.enums.DeliveryStatus;
 import com.multitrans.wasalliya.model.mapper.TourMapper;
-import com.multitrans.wasalliya.model.Delivery;
-import com.multitrans.wasalliya.model.Tour;
-import com.multitrans.wasalliya.model.Vehicale;
-import com.multitrans.wasalliya.model.Warehouse;
 import com.multitrans.wasalliya.optimizer.TourOptimizer;
-import com.multitrans.wasalliya.repository.DeliveryRepository;
-import com.multitrans.wasalliya.repository.TourRepository;
-import com.multitrans.wasalliya.repository.VehicaleRepository;
-import com.multitrans.wasalliya.repository.WarehouseRepository;
+import com.multitrans.wasalliya.repository.*;
 import com.multitrans.wasalliya.util.DistanceCalculator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +33,10 @@ public class TourService {
     private final VehicaleRepository vehicaleRepo;
     private final WarehouseRepository warehouseRepo;
     private final LoggingService logger;
+    private final DeliveryHistoryRepository historyRepo;
 
     @Autowired
-    public TourService(TourRepository tourRepository, TourMapper topurmapper, TourOptimizer tourOptimizer, DeliveryRepository deliveryRepo, VehicaleRepository vehicaleRepo, WarehouseRepository warehouseRepo, LoggingService logger) {
+    public TourService(TourRepository tourRepository, TourMapper topurmapper, TourOptimizer tourOptimizer, DeliveryRepository deliveryRepo, VehicaleRepository vehicaleRepo, WarehouseRepository warehouseRepo, LoggingService logger, DeliveryHistoryRepository historyRepo) {
         this.tourRepo = tourRepository;
         this.tourmapper = topurmapper;
         this.tourOptimizer = tourOptimizer;
@@ -48,6 +44,7 @@ public class TourService {
         this.vehicaleRepo = vehicaleRepo;
         this.warehouseRepo = warehouseRepo;
         this.logger = logger;
+        this.historyRepo = historyRepo;
     }
 
     public List<Delivery> getOptimizedTour(Long warehouseId, Long vehicaleId) {
@@ -74,6 +71,22 @@ public class TourService {
     public TourDTO saveTour(TourDTO dto) {
         logger.logInfo("attempt to save tour");
         Tour tourToSave = tourmapper.toEntity(dto);
+        
+        if (dto.vehicaleId() != null) {
+            Vehicale vehicale = vehicaleRepo.findById(dto.vehicaleId())
+                    .orElseThrow(() -> new RuntimeException("Vehicale not found with id: " + dto.vehicaleId()));
+            tourToSave.setVehicale(vehicale);
+        }
+        if (dto.warehouseId() != null) {
+            Warehouse warehouse = warehouseRepo.findById(dto.warehouseId())
+                    .orElseThrow(() -> new RuntimeException("Warehouse not found with id: " + dto.warehouseId()));
+            tourToSave.setWarehouse(warehouse);
+        }
+        if (dto.deliveryIds() != null && !dto.deliveryIds().isEmpty()) {
+            List<Delivery> deliveries = deliveryRepo.findAllById(dto.deliveryIds());
+            tourToSave.setDeliveries(deliveries);
+        }
+        
         Tour savedTour = tourRepo.save(tourToSave);
         logger.logInfo("Tour with id :" + savedTour.getId()+" has been saved" );
         return tourmapper.toDTO(savedTour);
@@ -152,8 +165,81 @@ public class TourService {
         return this.tourOptimizer.getClass().getSimpleName();
     }
 
+    @Transactional
+    public void updateTourStatus(Long id){
+        Tour tour = tourRepo.findById(id).orElseThrow(NoSuchElementException::new);
+        tour.getDeliveries().forEach(delivery -> {
+            delivery.setDeliveryStatus(DeliveryStatus.DELIVRED);
 
+            DeliveryHistory history = new DeliveryHistory();
 
+            history.setCustomer(delivery.getCustomer());
 
+            history.setDayOfWeek(tour.getDate().getDayOfWeek());
+
+            LocalTime planned = parsePlannedTime(delivery.getTimeWindow());
+            LocalTime actual = LocalTime.now();
+
+            history.setPlannedTime(planned);
+            history.setActualTime(actual);
+            if (planned != null && actual != null) {
+                Duration delayDuration = Duration.between(planned, actual);
+                history.setDelayInMinutes(delayDuration.toMinutes());
+            }
+            historyRepo.save(history);
+        });
+    }
+
+    private LocalTime parsePlannedTime(String timeWindow) {
+        if (timeWindow == null || timeWindow.isEmpty()) {
+            return null;
+        }
+
+        try {
+            String startTimeString = timeWindow.split("-")[0].trim();
+            return LocalTime.parse(startTimeString);
+
+        } catch (Exception e) {
+
+            System.err.println("Could not parse time window: " + timeWindow);
+            return null;
+        }
+    }
+
+    @Transactional
+    public void completeTour(Long tourId){
+
+        Tour tour = tourRepo.findById(tourId).orElseThrow(NoSuchElementException::new);
+
+        tour.getDeliveries().forEach(delivery -> {
+            delivery.setDeliveryStatus(DeliveryStatus.DELIVRED);
+            DeliveryHistory history = new DeliveryHistory();
+            history.setCustomer(delivery.getCustomer());
+            history.setTour(tour);
+            history.setDateDeLivraison(tour.getDate());
+            history.setDayOfWeek(tour.getDate().getDayOfWeek());
+
+            LocalTime planned = parsePlannedTime(delivery.getTimeWindow());
+            LocalTime actual = LocalTime.now();
+
+            history.setPlannedTime(planned);
+            history.setActualTime(actual);
+
+            if (planned != null){
+                Duration delayDuration = Duration.between(planned,actual);
+                history.setDelayInMinutes(delayDuration.toMinutes());
+            }
+
+            historyRepo.save(history);
+
+        });
+    }
+
+        public Map<DayOfWeek,Long> getHistoryCountByDay(){
+            var allHistories = historyRepo.findAll();
+
+            return allHistories.stream().collect(Collectors.groupingBy(DeliveryHistory::getDayOfWeek,Collectors.counting()
+            ));
+        }
 
 }

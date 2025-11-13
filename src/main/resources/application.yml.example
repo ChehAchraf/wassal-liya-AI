@@ -1,1 +1,50 @@
-your configuration here
+spring:
+  profiles:
+    active: the profile you wanna use
+  application:
+    name: wasalliya
+  ai:
+    ollama:
+      base-url: http://localhost:11434 // the default url for ollama models
+      chat:
+        options:
+          model: gemma3:4b // this is the model used in this project
+          temperature: 0.7
+
+  # ===== Datasource (H2 Database) =====
+  datasource:
+
+    url: // the url
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  # ===== H2 Console Configuration =====
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+
+app:
+  optimizer:
+      # here where you can switch between the strategy that u wanna use
+      # strategy: clarkeWright
+      # strategy: nearestNeighbor
+      # strategy: ai
+    strategy: ai
+
+
+  main:
+    allow-bean-definition-overriding: true
